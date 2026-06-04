@@ -134,7 +134,7 @@ async function sendMessage(){
  const r=await fetch('/api/chat.js',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:SYSTEM_PROMPT,messages:history})});
     const data=await r.json();
     document.getElementById('typing')?.remove();
-   if(data.error) throw new Error(JSON.stringify(data.error));
+   if(data.error) throw new Error(data.error.message||JSON.stringify(data.error));
     const reply=data.content?.[0]?.text||'Sin respuesta';
     addMsg('ai',reply);
     history.push({role:'assistant',content:reply});
