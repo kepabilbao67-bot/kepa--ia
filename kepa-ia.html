@@ -3,708 +3,157 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kepa IA — Tu Asistente Personal</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<meta name="theme-color" content="#0a0a0a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Kepa IA">
+<title>Kepa IA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --orange: #FF6B00;
-    --orange-dim: #FF6B0022;
-    --bg: #0A0A0A;
-    --bg2: #111111;
-    --bg3: #1A1A1A;
-    --border: #2A2A2A;
-    --text: #F0F0F0;
-    --text-dim: #666;
-    --green: #00FF88;
-    --green-dim: #00FF8820;
-  }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'JetBrains Mono', monospace;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
-
-  /* HEADER */
-  header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 16px 24px;
-    border-bottom: 1px solid var(--border);
-    background: var(--bg2);
-    flex-shrink: 0;
-  }
-
-  .logo {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .logo-icon {
-    width: 36px;
-    height: 36px;
-    background: var(--orange);
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: 'Syne', sans-serif;
-    font-weight: 800;
-    font-size: 14px;
-    color: #000;
-    letter-spacing: -0.5px;
-  }
-
-  .logo-text {
-    font-family: 'Syne', sans-serif;
-    font-weight: 700;
-    font-size: 18px;
-    letter-spacing: -0.5px;
-  }
-
-  .logo-text span {
-    color: var(--orange);
-  }
-
-  .status {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 11px;
-    color: var(--text-dim);
-  }
-
-  .status-dot {
-    width: 7px;
-    height: 7px;
-    background: var(--green);
-    border-radius: 50%;
-    animation: pulse 2s infinite;
-  }
-
-  @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.3; }
-  }
-
-  /* API KEY SETUP */
-  #setup-screen {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 24px;
-  }
-
-  .setup-card {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 40px;
-    max-width: 480px;
-    width: 100%;
-    text-align: center;
-  }
-
-  .setup-card h2 {
-    font-family: 'Syne', sans-serif;
-    font-size: 24px;
-    font-weight: 800;
-    margin-bottom: 8px;
-  }
-
-  .setup-card p {
-    color: var(--text-dim);
-    font-size: 13px;
-    margin-bottom: 28px;
-    line-height: 1.6;
-  }
-
-  .api-input-wrap {
-    position: relative;
-    margin-bottom: 16px;
-  }
-
-  .api-input-wrap input {
-    width: 100%;
-    background: var(--bg3);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 14px 16px;
-    color: var(--text);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 13px;
-    outline: none;
-    transition: border-color 0.2s;
-  }
-
-  .api-input-wrap input:focus {
-    border-color: var(--orange);
-  }
-
-  .btn-primary {
-    width: 100%;
-    background: var(--orange);
-    color: #000;
-    border: none;
-    border-radius: 10px;
-    padding: 14px;
-    font-family: 'Syne', sans-serif;
-    font-weight: 700;
-    font-size: 15px;
-    cursor: pointer;
-    transition: opacity 0.2s, transform 0.1s;
-  }
-
-  .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
-  .btn-primary:active { transform: translateY(0); }
-
-  /* CHAT SCREEN */
-  #chat-screen {
-    flex: 1;
-    display: none;
-    flex-direction: column;
-    overflow: hidden;
-  }
-
-  /* SYSTEM PROMPT BAR */
-  .system-bar {
-    padding: 10px 20px;
-    background: var(--orange-dim);
-    border-bottom: 1px solid var(--orange)33;
-    font-size: 11px;
-    color: var(--orange);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-shrink: 0;
-  }
-
-  /* MESSAGES */
-  #messages {
-    flex: 1;
-    overflow-y: auto;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    scroll-behavior: smooth;
-  }
-
-  #messages::-webkit-scrollbar { width: 4px; }
-  #messages::-webkit-scrollbar-track { background: transparent; }
-  #messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-
-  .msg {
-    display: flex;
-    gap: 12px;
-    max-width: 85%;
-    animation: fadeUp 0.3s ease;
-  }
-
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  .msg.user { margin-left: auto; flex-direction: row-reverse; }
-
-  .msg-avatar {
-    width: 32px;
-    height: 32px;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: 'Syne', sans-serif;
-    font-weight: 800;
-    font-size: 12px;
-    flex-shrink: 0;
-    margin-top: 2px;
-  }
-
-  .msg.user .msg-avatar {
-    background: var(--orange);
-    color: #000;
-  }
-
-  .msg.assistant .msg-avatar {
-    background: var(--bg3);
-    border: 1px solid var(--border);
-    color: var(--orange);
-  }
-
-  .msg-bubble {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 12px 16px;
-    font-size: 14px;
-    line-height: 1.7;
-    white-space: pre-wrap;
-    word-break: break-word;
-  }
-
-  .msg.user .msg-bubble {
-    background: var(--orange);
-    color: #000;
-    border-color: var(--orange);
-    font-weight: 500;
-  }
-
-  .msg.assistant .msg-bubble {
-    color: var(--text);
-  }
-
-  /* THINKING */
-  .thinking .msg-bubble {
-    color: var(--text-dim);
-    font-style: italic;
-  }
-
-  .thinking-dots {
-    display: inline-flex;
-    gap: 4px;
-    align-items: center;
-  }
-
-  .thinking-dots span {
-    width: 5px;
-    height: 5px;
-    background: var(--text-dim);
-    border-radius: 50%;
-    animation: blink 1.2s infinite;
-  }
-
-  .thinking-dots span:nth-child(2) { animation-delay: 0.2s; }
-  .thinking-dots span:nth-child(3) { animation-delay: 0.4s; }
-
-  @keyframes blink {
-    0%, 80%, 100% { opacity: 0.2; }
-    40% { opacity: 1; }
-  }
-
-  /* INPUT AREA */
-  .input-area {
-    padding: 16px 20px;
-    border-top: 1px solid var(--border);
-    background: var(--bg2);
-    flex-shrink: 0;
-  }
-
-  .input-wrap {
-    display: flex;
-    gap: 10px;
-    align-items: flex-end;
-    background: var(--bg3);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 10px 14px;
-    transition: border-color 0.2s;
-  }
-
-  .input-wrap:focus-within {
-    border-color: var(--orange);
-  }
-
-  #user-input {
-    flex: 1;
-    background: transparent;
-    border: none;
-    outline: none;
-    color: var(--text);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 14px;
-    resize: none;
-    max-height: 120px;
-    line-height: 1.5;
-  }
-
-  #user-input::placeholder { color: var(--text-dim); }
-
-  .send-btn {
-    width: 36px;
-    height: 36px;
-    background: var(--orange);
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: opacity 0.2s, transform 0.1s;
-    flex-shrink: 0;
-  }
-
-  .send-btn:hover { opacity: 0.85; transform: scale(1.05); }
-  .send-btn:disabled { opacity: 0.3; cursor: not-allowed; transform: none; }
-
-  .send-btn svg { width: 16px; height: 16px; fill: #000; }
-
-  /* FOOTER */
-  .input-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 8px;
-    padding: 0 2px;
-  }
-
-  .hint {
-    font-size: 10px;
-    color: var(--text-dim);
-  }
-
-  .clear-btn {
-    background: none;
-    border: none;
-    color: var(--text-dim);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    cursor: pointer;
-    padding: 2px 6px;
-    border-radius: 4px;
-    transition: color 0.2s;
-  }
-
-  .clear-btn:hover { color: var(--orange); }
-
-  /* ERROR */
-  .error-msg a
-    background: #FF000015;
-    border: 1px solid #FF000040;
-    border-radius: 8px;
-    padding: 10px 14px;
-    font-size: 12px;
-    color: #FF6B6B;
-    margin: 0 20px;
-  }
-
-  /* WELCOME */
-  .welcome-msg {
-    text-align: center;
-    padding: 40px 20px;
-    color: var(--text-dim);
-  }
-
-  .welcome-msg h3 {
-    font-family: 'Syne', sans-serif;
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--text);
-    margin-bottom: 8px;
-  }
-
-  .welcome-msg p {
-    font-size: 13px;
-    line-height: 1.6;
-    max-width: 360px;
-    margin: 0 auto 24px;
-  }
-
-  .suggestions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    justify-content: center;
-  }
-
-  .suggestion {
-    background: var(--bg3);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 8px 14px;
-    font-size: 12px;
-    cursor: pointer;
-    transition: border-color 0.2s, color 0.2s;
-    color: var(--text-dim);
-  }
-
-  .suggestion:hover {
-    border-color: var(--orange);
-    color: var(--orange);
-  }
+:root {
+  --orange: #FF6B00;
+  --orange-glow: rgba(255,107,0,0.15);
+  --orange-dim: rgba(255,107,0,0.6);
+  --bg: #0a0a0a;
+  --bg2: #111111;
+  --bg3: #1a1a1a;
+  --border: rgba(255,107,0,0.2);
+  --text: #f0f0f0;
+  --text-dim: #666;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif; height:100dvh; display:flex; flex-direction:column; overflow:hidden; }
+header { display:flex; align-items:center; justify-content:space-between; padding:14px 18px; border-bottom:1px solid var(--border); flex-shrink:0; }
+.logo { display:flex; align-items:center; gap:10px; }
+.logo-icon { width:34px; height:34px; background:var(--orange); border-radius:8px; display:flex; align-items:center; justify-content:center; font-family:'Space Mono',monospace; font-weight:700; font-size:12px; color:#000; }
+.logo-text { font-family:'Space Mono',monospace; font-size:15px; font-weight:700; letter-spacing:1px; }
+.logo-text span { color:var(--orange); }
+.status { display:flex; align-items:center; gap:6px; font-size:11px; color:var(--text-dim); font-family:'Space Mono',monospace; }
+.status-dot { width:7px; height:7px; background:#00ff88; border-radius:50%; box-shadow:0 0 8px #00ff88; animation:pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+.btn-icon { width:32px; height:32px; background:var(--bg3); border:1px solid var(--border); border-radius:8px; color:var(--text-dim); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:14px; transition:all 0.2s; }
+.mode-bar { padding:8px 18px; background:rgba(255,107,0,0.06); border-bottom:1px solid var(--border); font-size:11px; color:var(--orange-dim); font-family:'Space Mono',monospace; flex-shrink:0; }
+#messages { flex:1; overflow-y:auto; padding:20px 16px; display:flex; flex-direction:column; gap:16px; scroll-behavior:smooth; }
+#messages::-webkit-scrollbar { width:4px; }
+#messages::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+.message { display:flex; flex-direction:column; gap:4px; animation:fadeIn 0.3s ease; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+.message.user { align-items:flex-end; }
+.message.ai { align-items:flex-start; }
+.msg-label { font-size:10px; font-family:'Space Mono',monospace; color:var(--text-dim); padding:0 4px; }
+.message.user .msg-label { color:var(--orange-dim); }
+.msg-bubble { max-width:85%; padding:12px 16px; border-radius:16px; font-size:14px; line-height:1.6; white-space:pre-wrap; word-break:break-word; }
+.message.user .msg-bubble { background:rgba(255,107,0,0.12); border:1px solid rgba(255,107,0,0.25); border-bottom-right-radius:4px; }
+.message.ai .msg-bubble { background:#141414; border:1px solid rgba(255,255,255,0.06); border-bottom-left-radius:4px; }
+.typing-indicator { display:flex; align-items:center; gap:4px; padding:14px 16px; background:#141414; border:1px solid rgba(255,255,255,0.06); border-radius:16px; border-bottom-left-radius:4px; }
+.typing-dot { width:6px; height:6px; background:var(--orange); border-radius:50%; animation:typingBounce 1.2s infinite; }
+.typing-dot:nth-child(2){animation-delay:0.2s} .typing-dot:nth-child(3){animation-delay:0.4s}
+@keyframes typingBounce { 0%,60%,100%{transform:translateY(0);opacity:0.4} 30%{transform:translateY(-6px);opacity:1} }
+.welcome { display:flex; flex-direction:column; align-items:center; justify-content:center; flex:1; gap:12px; padding:40px 20px; text-align:center; }
+.welcome-icon { width:64px; height:64px; background:rgba(255,107,0,0.1); border:1px solid var(--border); border-radius:20px; display:flex; align-items:center; justify-content:center; font-size:28px; margin-bottom:8px; }
+.welcome h2 { font-size:20px; font-weight:600; }
+.welcome p { font-size:13px; color:var(--text-dim); max-width:260px; line-height:1.6; }
+.quick-actions { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-top:8px; }
+.quick-btn { background:var(--bg3); border:1px solid var(--border); border-radius:20px; padding:8px 14px; font-size:12px; color:var(--text-dim); cursor:pointer; transition:all 0.2s; font-family:'DM Sans',sans-serif; }
+.quick-btn:hover { background:rgba(255,107,0,0.1); border-color:var(--orange); color:var(--orange); }
+.input-area { padding:12px 16px 16px; border-top:1px solid var(--border); background:var(--bg); flex-shrink:0; }
+.input-wrap { display:flex; align-items:flex-end; gap:10px; background:var(--bg3); border:1px solid var(--border); border-radius:16px; padding:10px 10px 10px 16px; transition:border-color 0.2s; }
+.input-wrap:focus-within { border-color:var(--orange); box-shadow:0 0 0 3px rgba(255,107,0,0.1); }
+#input { flex:1; background:transparent; border:none; outline:none; color:var(--text); font-family:'DM Sans',sans-serif; font-size:14px; line-height:1.5; resize:none; max-height:120px; min-height:22px; }
+#input::placeholder { color:var(--text-dim); }
+#send-btn { width:36px; height:36px; background:var(--orange); border:none; border-radius:10px; color:#000; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:all 0.2s; font-size:16px; }
+#send-btn:disabled { background:var(--bg3); color:var(--text-dim); cursor:not-allowed; }
+.input-hint { font-size:10px; color:var(--text-dim); margin-top:6px; text-align:center; font-family:'Space Mono',monospace; }
+.error-msg { background:rgba(255,50,50,0.1); border:1px solid rgba(255,50,50,0.3); border-radius:12px; padding:10px 14px; font-size:13px; color:#ff6666; }
 </style>
 </head>
 <body>
-
 <header>
   <div class="logo">
     <div class="logo-icon">KIA</div>
     <div class="logo-text">KEPA <span>IA</span></div>
   </div>
-  <div class="status">
-    <div class="status-dot"></div>
-    <span id="status-text">Configura tu API key</span>
-  </div>
+  <div class="status"><div class="status-dot"></div>Claude Sonnet</div>
+  <button class="btn-icon" onclick="clearChat()">↺</button>
 </header>
-
-<!-- SETUP -->
-<div id="setup-screen">
-  <div class="setup-card">
-    <h2>🔑 Conecta tu IA</h2>
-    <p>Introduce tu API key de Anthropic para activar tu asistente personal Kepa IA. Se guarda solo en tu navegador.</p>
-    <div class="api-input-wrap">
-      <input type="password" id="api-key-input" placeholder="sk-ant-api03-..." autocomplete="off" />
-    </div>
-    <button class="btn-primary" onclick="activateIA()">Activar Kepa IA</button>
-  </div>
-</div>
-
-<!-- CHAT -->
-<div id="chat-screen">
-  <div class="system-bar">
-    ⚡ Modo: Asistente Personal de Kepa — Automatización IA · Bilbao
-  </div>
-
-  <div id="messages">
-    <div class="welcome-msg">
-      <h3>Hola Kepa 👋</h3>
-      <p>Soy tu asistente personal. Pregúntame lo que quieras — automatizaciones, estrategia, código, negocios, lo que sea.</p>
-      <div class="suggestions">
-        <div class="suggestion" onclick="sendSuggestion('¿Cómo conecto Make.com con WhatsApp?')">Make.com + WhatsApp</div>
-        <div class="suggestion" onclick="sendSuggestion('Dame ideas para vender automatizaciones en Bilbao')">Ideas de negocio</div>
-        <div class="suggestion" onclick="sendSuggestion('¿Cómo automatizo respuestas de Instagram con IA?')">Instagram + IA</div>
-        <div class="suggestion" onclick="sendSuggestion('Explícame cómo funciona un webhook')">¿Qué es un webhook?</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="input-area">
-    <div class="input-wrap">
-      <textarea id="user-input" placeholder="Pregúntame lo que quieras..." rows="1" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
-      <button class="send-btn" id="send-btn" onclick="sendMessage()">
-        <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/></svg>
-      </button>
-    </div>
-    <div class="input-footer">
-      <span class="hint">Enter para enviar · Shift+Enter nueva línea</span>
-      <button class="clear-btn" onclick="clearChat()">limpiar chat</button>
+<div class="mode-bar">⚡ Asistente Personal · Automatización IA · Bilbao</div>
+<div id="messages">
+  <div class="welcome" id="welcome">
+    <div class="welcome-icon">⚡</div>
+    <h2>Hola Kepa</h2>
+    <p>Tu asistente personal de IA. Pregúntame lo que necesites.</p>
+    <div class="quick-actions">
+      <button class="quick-btn" onclick="quickSend('Ayúdame a crear un flujo en Make.com')">Make.com</button>
+      <button class="quick-btn" onclick="quickSend('Dame ideas para KepatecnologIA')">Ideas negocio</button>
+      <button class="quick-btn" onclick="quickSend('Cómo automatizo esto con IA')">Automatizar</button>
+      <button class="quick-btn" onclick="quickSend('Revisa mi estrategia de contenido')">Contenido</button>
     </div>
   </div>
 </div>
-
+<div class="input-area">
+  <div class="input-wrap">
+    <textarea id="input" placeholder="Pregúntame lo que quieras..." rows="1"></textarea>
+    <button id="send-btn" onclick="sendMessage()">➤</button>
+  </div>
+  <div class="input-hint">Enter para enviar · Shift+Enter nueva línea</div>
+</div>
 <script>
-  let apiKey = '';
-  let conversationHistory = [];
-
-  const SYSTEM_PROMPT = `Eres el asistente personal de Kepa, un emprendedor de Bilbao especializado en automatización con IA. 
-
-Tu personalidad:
-- Directo, sin rodeos, sin preambles innecesarios
-- Experto en Make.com, n8n, webhooks, APIs, automatización de procesos
-- Conoces el negocio de Kepa: KepatecnologIA, freelancer de automatización
-- Respondes en español siempre
-- Das ejemplos concretos y pasos numerados cuando hay proceso
-- Si no sabes algo, lo dices claramente
-- Eres como un socio estratégico, no un asistente genérico
-
-Contexto de Kepa:
-- Tiene Make.com y herramientas de automatización
-- Construye KepatecnologIA, su marca de automatización con IA
-- Objetivo: libertad financiera para ayudar a los demás
-- Stack: Make.com, n8n, Anthropic API, webhooks, Instagram automation
-
-Responde siempre de forma útil, específica y accionable.`;
-
-  // Check saved key
-  window.onload = () => {
-    const saved = localStorage.getItem('kepa_ia_key');
-    if (saved) {
-      apiKey = saved;
-      showChat();
-    }
-  };
-
-  function activateIA() {
-    const input = document.getElementById('api-key-input');
-    const key = input.value.trim();
-    if (!key.startsWith('sk-ant-')) {
-      input.style.borderColor = '#FF6B6B';
-      input.placeholder = 'La key debe empezar por sk-ant-...';
-      return;
-    }
-    apiKey = key;
-    localStorage.setItem('kepa_ia_key', key);
-    showChat();
+const SYSTEM_PROMPT = `Eres el asistente personal de Kepa, emprendedor de Bilbao especializado en automatización con IA bajo la marca KepatecnologIA. Directo, práctico, en español de España. Sin rodeos.`;
+let history = JSON.parse(localStorage.getItem('kepa-history') || '[]');
+let loading = false;
+const msgs = document.getElementById('messages');
+const inp = document.getElementById('input');
+const btn = document.getElementById('send-btn');
+const welcome = document.getElementById('welcome');
+inp.addEventListener('input', function(){ this.style.height='auto'; this.style.height=Math.min(this.scrollHeight,120)+'px'; });
+inp.addEventListener('keydown', e=>{ if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();} });
+function quickSend(t){ inp.value=t; sendMessage(); }
+function clearChat(){ history=[]; localStorage.removeItem('kepa-history'); msgs.innerHTML=''; msgs.appendChild(welcome); welcome.style.display='flex'; }
+function addMsg(role, content){
+  welcome.style.display='none';
+  const d=document.createElement('div');
+  d.className=`message ${role}`;
+  d.innerHTML=`<div class="msg-label">${role==='user'?'Tú':'Kepa IA'}</div><div class="msg-bubble">${content.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')}</div>`;
+  msgs.appendChild(d);
+  msgs.scrollTop=msgs.scrollHeight;
+}
+function showTyping(){
+  const d=document.createElement('div');
+  d.className='message ai'; d.id='typing';
+  d.innerHTML='<div class="msg-label">Kepa IA</div><div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>';
+  msgs.appendChild(d); msgs.scrollTop=msgs.scrollHeight;
+}
+async function sendMessage(){
+  const text=inp.value.trim();
+  if(!text||loading) return;
+  inp.value=''; inp.style.height='auto'; loading=true; btn.disabled=true;
+  addMsg('user',text);
+  history.push({role:'user',content:text});
+  showTyping();
+  try {
+    const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:SYSTEM_PROMPT,messages:history})});
+    const data=await r.json();
+    document.getElementById('typing')?.remove();
+    if(data.error) throw new Error(data.error);
+    const reply=data.content?.[0]?.text||'Sin respuesta';
+    addMsg('ai',reply);
+    history.push({role:'assistant',content:reply});
+    if(history.length>20) history=history.slice(-20);
+    localStorage.setItem('kepa-history',JSON.stringify(history));
+  } catch(e){
+    document.getElementById('typing')?.remove();
+    const d=document.createElement('div');
+    d.className='message ai';
+    d.innerHTML=`<div class="msg-label">Kepa IA</div><div class="error-msg">⚠ ${e.message||'Error de conexión'}</div>`;
+    msgs.appendChild(d); msgs.scrollTop=msgs.scrollHeight;
   }
-
-  function showChat() {
-    document.getElementById('setup-screen').style.display = 'none';
-    document.getElementById('chat-screen').style.display = 'flex';
-    document.getElementById('status-text').textContent = 'Activo · Claude Sonnet';
-    document.getElementById('user-input').focus();
-  }
-
-  function handleKey(e) {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage();
-    }
-  }
-
-  function autoResize(el) {
-    el.style.height = 'auto';
-    el.style.height = Math.min(el.scrollHeight, 120) + 'px';
-  }
-
-  function sendSuggestion(text) {
-    document.getElementById('user-input').value = text;
-    sendMessage();
-  }
-
-  async function sendMessage() {
-    const input = document.getElementById('user-input');
-    const text = input.value.trim();
-    if (!text || !apiKey) return;
-
-    // Clear welcome
-    const welcome = document.querySelector('.welcome-msg');
-    if (welcome) welcome.remove();
-
-    // Add user message
-    addMessage('user', text);
-    input.value = '';
-    input.style.height = 'auto';
-
-    // Add to history
-    conversationHistory.push({ role: 'user', content: text });
-
-    // Disable send
-    const btn = document.getElementById('send-btn');
-    btn.disabled = true;
-
-    // Thinking indicator
-    const thinkingId = addThinking();
-
-    try {
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': apiKey,
-          'anthropic-version': '2023-06-01'
-        },
-        body: JSON.stringify({
-          model: 'claude-sonnet-4-20250514',
-          max_tokens: 1024,
-          system: SYSTEM_PROMPT,
-          messages: conversationHistory
-        })
-      });
-
-      removeThinking(thinkingId);
-
-      if (!response.ok) {
-        const err = await response.json();
-        if (err.error?.type === 'authentication_error') {
-          addError('API key inválida. Ve a Configuración y actualízala.');
-          localStorage.removeItem('kepa_ia_key');
-        } else {
-          addError(`Error: ${err.error?.message || 'Error desconocido'}`);
-        }
-        btn.disabled = false;
-        return;
-      }
-
-      const data = await response.json();
-      const reply = data.content[0].text;
-
-      conversationHistory.push({ role: 'assistant', content: reply });
-      addMessage('assistant', reply);
-
-    } catch (err) {
-      removeThinking(thinkingId);
-      addError('Error de conexión. Comprueba tu internet.');
-    }
-
-    btn.disabled = false;
-    input.focus();
-  }
-
-  function addMessage(role, text) {
-    const msgs = document.getElementById('messages');
-    const div = document.createElement('div');
-    div.className = `msg ${role}`;
-    div.innerHTML = `
-      <div class="msg-avatar">${role === 'user' ? 'K' : 'IA'}</div>
-      <div class="msg-bubble">${escapeHtml(text)}</div>
-    `;
-    msgs.appendChild(div);
-    msgs.scrollTop = msgs.scrollHeight;
-    return div;
-  }
-
-  function addThinking() {
-    const msgs = document.getElementById('messages');
-    const id = 'thinking-' + Date.now();
-    const div = document.createElement('div');
-    div.className = 'msg assistant thinking';
-    div.id = id;
-    div.innerHTML = `
-      <div class="msg-avatar">IA</div>
-      <div class="msg-bubble">
-        <div class="thinking-dots">
-          <span></span><span></span><span></span>
-        </div>
-      </div>
-    `;
-    msgs.appendChild(div);
-    msgs.scrollTop = msgs.scrollHeight;
-    return id;
-  }
-
-  function removeThinking(id) {
-    const el = document.getElementById(id);
-    if (el) el.remove();
-  }
-
-  function addError(msg) {
-    const msgs = document.getElementById('messages');
-    const div = document.createElement('div');
-    div.className = 'error-msg';
-    div.textContent = '⚠️ ' + msg;
-    msgs.appendChild(div);
-    msgs.scrollTop = msgs.scrollHeight;
-  }
-
-  function clearChat() {
-    conversationHistory = [];
-    const msgs = document.getElementById('messages');
-    msgs.innerHTML = `
-      <div class="welcome-msg">
-        <h3>Chat limpiado ✓</h3>
-        <p>Nueva conversación lista.</p>
-      </div>
-    `;
-  }
-
-  function escapeHtml(text) {
-    return text
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/\n/g, '<br>');
-  }
-
-  // Enter key on API input
-  document.addEventListener('DOMContentLoaded', () => {
-    const apiInput = document.getElementById('api-key-input');
-    if (apiInput) {
-      apiInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') activateIA();
-      });
-    }
-  });
+  loading=false; btn.disabled=false; inp.focus();
+}
+if(history.length>0){
+  welcome.style.display='none';
+  history.forEach(m=>addMsg(m.role==='user'?'user':'ai',m.content));
+}
+inp.focus();
 </script>
 </body>
 </html>
